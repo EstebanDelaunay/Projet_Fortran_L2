@@ -9,7 +9,7 @@ module projet
         INTEGER, DIMENSION(:), ALLOCATABLE :: pile 
             !! Tableau du nombre de grains par pile
         CHARACTER(1), DIMENSION(:,:), ALLOCATABLE :: grille 
-            !! Tableau déstiné à l'affichage du tas de sablegitFaire 
+            !! Tableau déstiné à l'affichage du tas de sable
     end type tas
     
     contains
