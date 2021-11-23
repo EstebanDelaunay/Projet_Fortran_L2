@@ -1,3 +1,5 @@
+!! Nemo's branch
+
 module projet
     
     type tas 
@@ -9,22 +11,30 @@ module projet
         INTEGER, DIMENSION(:), ALLOCATABLE :: pile 
             !! Tableau du nombre de grains par pile
         CHARACTER(1), DIMENSION(:,:), ALLOCATABLE :: grille 
-            !! Tableau déstiné à l'affichage du tas de sable
+            !! Tableau destiné à l'affichage du tas de sable
     end type tas
     
     contains
 
-    function lecture_controlee(nmin, nmax) result(valeur)
+    INTEGER function lecture_controlee(nmin, nmax)
         !! Retourne une valeur saisie par l'utilisateur 
         !! en s'assurant qu'elle est comprise entre nmin et nmax
 
         implicit none
-        integer :: nmin, nmax
+        integer, INTENT(IN) :: nmin, nmax
         integer :: valeur
 
-        !/**********************/
-        !* Corps de la fonction *
-        !/**********************/
+        valeur = 0
+
+        do
+            print*, "Entrez une valeur comprise entre : ", nmin, "et", nmax
+            read*, valeur
+
+            if (valeur > nmin .AND. valeur < nmax) exit 
+
+        end do
+
+        lecture_controlee = valeur
         
     end function lecture_controlee
 
@@ -44,9 +54,8 @@ program projet_esteban_nemo
     use projet
     implicit none
     TYPE(tas) :: mon_tas
-    
-    !/********************/
-    !* Corps du programme *
-    !/********************/
+    integer :: nmin = 4, nmax = 32
+
+    lecture_controlee(nmin, nmax)
 
 end program projet_esteban_nemo
