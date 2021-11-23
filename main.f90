@@ -11,22 +11,30 @@ module projet
         INTEGER, DIMENSION(:), ALLOCATABLE :: pile 
             !! Tableau du nombre de grains par pile
         CHARACTER(1), DIMENSION(:,:), ALLOCATABLE :: grille 
-            !! Tableau déstiné à l'affichage du tas de sable
+            !! Tableau destiné à l'affichage du tas de sable
     end type tas
 
     contains
 
-    integer function lecture_controlee(nmin, nmax)
+    INTEGER function lecture_controlee(nmin, nmax)
         !! Retourne une valeur saisie par l'utilisateur 
         !! en s'assurant qu'elle est comprise entre nmin et nmax
 
         implicit none
-        integer :: nmin, nmax
+        integer, INTENT(IN) :: nmin, nmax
         integer :: valeur
 
-        !/**********************/
-        !* Corps de la fonction *
-        !/**********************/
+        valeur = 0
+
+        do
+            print*, "Entrez une valeur comprise entre : ", nmin, "et", nmax
+            read*, valeur
+
+            if (valeur > nmin .AND. valeur < nmax) exit 
+
+        end do
+
+        lecture_controlee = valeur
         
     end function lecture_controlee
 
