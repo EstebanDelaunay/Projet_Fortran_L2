@@ -1,5 +1,7 @@
+!! ESTEBAN BRANCH
+
 module projet
-    
+
     type tas 
         !! Type dérivé
         INTEGER :: rayon 
@@ -11,10 +13,10 @@ module projet
         CHARACTER(1), DIMENSION(:,:), ALLOCATABLE :: grille 
             !! Tableau déstiné à l'affichage du tas de sable
     end type tas
-    
+
     contains
 
-    function lecture_controlee(nmin, nmax) result(valeur)
+    integer function lecture_controlee(nmin, nmax)
         !! Retourne une valeur saisie par l'utilisateur 
         !! en s'assurant qu'elle est comprise entre nmin et nmax
 
@@ -38,15 +40,36 @@ module projet
         !/************************/
     
     end subroutine affiche
+
+    subroutine transfert_grain(pile)
+        !! Modifie le tableau pile pour simuler la chute des grains
+        INTEGER, DIMENSION(:), intent(inout) :: pile
+
+
+    end subroutine transfert_grain
+
 end module projet
 
 program projet_esteban_nemo
     use projet
     implicit none
     TYPE(tas) :: mon_tas
-    
-    !/********************/
-    !* Corps du programme *
-    !/********************/
+    integer, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
+    INTEGER :: i = 0
+
+    mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
+    mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
+
+    ALLOCATE(mon_tas%pile(0 : mon_tas%rayon - 1), mon_tas%grille(mon_tas%rayon,mon_tas%hmax))
+
+    do
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
+            !! Quitte la boucle si la hauteur max est atteinte
+        if (mod(i,nt) /= 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
+            !! Ajout d'un grain tout les nt
+        call transfert_grain(mon_tas%pile)
+        call affiche(mon_tas)
+        i = i + 1
+    end do
 
 end program projet_esteban_nemo
