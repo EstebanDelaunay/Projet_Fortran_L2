@@ -55,7 +55,9 @@ program projet_esteban_nemo
     implicit none
     TYPE(tas) :: mon_tas
     integer :: nmin = 4, nmax = 32
+    INTEGER :: i
 
-    lecture_controlee(nmin, nmax)
+    i = lecture_controlee(nmin, nmax)
+    print * , i
 
 end program projet_esteban_nemo
