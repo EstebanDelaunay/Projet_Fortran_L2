@@ -30,23 +30,6 @@ module projet
         
     end function lecture_controlee
 
-    logical function lecture_hauteur(pile, r_max)
-        implicit none
-        integer, DIMENSION(:), INTENT(IN) :: pile
-        INTEGER, INTENT(IN) :: r_max
-        INTEGER :: i, h_max
-
-        h_max = pile(1)
-        
-        do i=2, r_max
-            if (pile(i) > pile(i-1)) h_max = pile(i)
-        end do
-
-        lecture_hauteur = h_max
-        
-        
-    end function lecture_hauteur
-
     subroutine affiche(un_tas) 
         !! Affiche l'état du tas
         implicit none
@@ -57,21 +40,36 @@ module projet
         !/************************/
     
     end subroutine affiche
+
+    subroutine transfert_grain(pile)
+        !! Modifie le tableau pile pour simuler la chute des grains
+        INTEGER, DIMENSION(:), intent(inout) :: pile
+
+
+    end subroutine transfert_grain
+
 end module projet
 
 program projet_esteban_nemo
     use projet
     implicit none
     TYPE(tas) :: mon_tas
-    integer, PARAMETER :: borne_inf = 3, borne_sup = 40
+    integer, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
+    INTEGER :: i = 0
 
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
     mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
 
-    ALLOCATE(mon_tas%pile(mon_tas%rayon), mon_tas%grille(mon_tas%rayon,mon_tas%hmax))
+    ALLOCATE(mon_tas%pile(0 : mon_tas%rayon - 1), mon_tas%grille(mon_tas%rayon,mon_tas%hmax))
 
     do
-        
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
+            !! Quitte la boucle si la hauteur max est atteinte
+        if (mod(i,nt) /= 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
+            !! Ajout d'un grain tout les nt
+        call transfert_grain(mon_tas%pile)
+        call affiche(mon_tas)
+        i = i + 1
     end do
 
 end program projet_esteban_nemo
