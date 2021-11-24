@@ -51,6 +51,7 @@ module projet
 
     subroutine transfert_grain(pile)
         !! Modifie le tableau pile pour simuler la chute des grains
+        !! Ajoute un grain dans une des colonnes de façon aléatoire
         INTEGER, DIMENSION(:), intent(inout) :: pile
 
 
