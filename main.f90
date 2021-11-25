@@ -53,17 +53,17 @@ module projet
         !! Modifie le tableau pile pour simuler la chute des grains
         !! Ajoute un grain dans une des colonnes de façon aléatoire
         INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
-        INTEGER, INTENT(IN) :: montas%rayon !taille du tableau où sont affichés les nombres de grains
+        INTEGER, INTENT(IN) :: rmax = montas%rayon !taille du tableau où sont affichés les nombres de grains
         REAL :: r
         INTEGER :: i
 
         CALL random_seed
         CALL random_number(r)
 
-        r = r * (rmax+1)
+        r = r * (rmax + 1)
         i = floor(r)
 
-        pile = pile(i)+1
+        pile = pile(i) + 1
 
     end subroutine transfert_grain
 
