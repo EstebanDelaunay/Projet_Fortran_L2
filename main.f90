@@ -21,8 +21,8 @@ module projet
         !! en s'assurant qu'elle est comprise entre nmin et nmax
 
         implicit none
-        integer, INTENT(IN) :: nmin, nmax
-        integer :: valeur
+        INTEGER, INTENT(IN) :: nmin, nmax
+        INTEGER :: valeur
 
         valeur = 0
 
@@ -41,7 +41,7 @@ module projet
     subroutine affiche(un_tas) 
         !! Affiche l'état du tas
         implicit none
-        type(tas),intent(in) :: un_tas
+        TYPE(tas),INTENT(IN) :: un_tas
 
         !/************************/
         !* Corps de la subroutine *
@@ -52,19 +52,29 @@ module projet
     subroutine transfert_grain(pile)
         !! Modifie le tableau pile pour simuler la chute des grains
         !! Ajoute un grain dans une des colonnes de façon aléatoire
-        INTEGER, DIMENSION(:), intent(inout) :: pile
+        INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
+        INTEGER, INTENT(IN) :: montas%rayon !taille du tableau où sont affichés les nombres de grains
+        REAL :: r
+        INTEGER :: i
 
+        CALL random_seed
+        CALL random_number(r)
+
+        r = r * (rmax+1)
+        i = floor(r)
+
+        pile = pile(i)+1
 
     end subroutine transfert_grain
 
 end module projet
 
-program projet_esteban_nemo
+program projet_esteban_nemo !Ajouter les tableaux mon_tas%pile et mon_tas%grille dans la déclaration 
     use projet
     implicit none
     TYPE(tas) :: mon_tas
-    integer, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
-    INTEGER :: i = 0
+    INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
+    INTEGER :: i = 0 !compteur du nombre de grains ajoutés
 
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
     mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
