@@ -1,5 +1,4 @@
 module projet
-
     type tas 
         !! Type dérivé
         INTEGER :: rayon 
@@ -17,34 +16,42 @@ module projet
     INTEGER function lecture_controlee(nmin, nmax)
         !! Retourne une valeur saisie par l'utilisateur 
         !! en s'assurant qu'elle est comprise entre nmin et nmax
-
         implicit none
-        INTEGER, INTENT(IN) :: nmin, nmax
-        INTEGER :: valeur
-
-        valeur = 0
+        integer, INTENT(IN) :: nmin, nmax
+        integer :: valeur = 0
 
         do
             print*, "Entrez une valeur comprise entre : ", nmin, "et", nmax
             read*, valeur
-
             if (valeur > nmin .AND. valeur < nmax) exit 
-
         end do
-
         lecture_controlee = valeur
-        
+
     end function lecture_controlee
 
     subroutine affiche(un_tas) 
-        !! Affiche l'état du tas
+        !! Affichage du tas
         implicit none
-        TYPE(tas),INTENT(IN) :: un_tas
+        type(tas),intent(inout) :: un_tas
+        INTEGER :: line , colonne
 
-        !/************************/
-        !* Corps de la subroutine *
-        !/************************/
-    
+        !Remplissage de la grille de caractère        
+        do colonne = 0, un_tas%rayon -1
+            if (un_tas%pile(colonne) /= 0) then
+                do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1 !Pars de la fin de la grille pour rajouter les grains
+                    un_tas%grille(line,colonne) = "O"
+                end do
+            end if
+        end do   
+        
+        !Affichage de la grille
+        do line = 0, un_tas%hmax-1
+            do colonne = 0, (un_tas%rayon-1)
+                write(*, fmt="(1x,a,i0)",advance= "no") un_tas%grille(line,colonne)
+            end do
+            print *,""
+        end do
+
     end subroutine affiche
 
     subroutine transfert_grain(pile, rmax)
@@ -78,20 +85,31 @@ program projet_esteban_nemo
     INTEGER :: compteur = 0
         !! Compteur du nombre de grains ajoutés
 
+    print *, "Rentrez le rayon maximum du tas"
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
+    print *, "Rentrez la hauteur maximum du tas"
     mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
 
-    ALLOCATE(mon_tas%pile(0 : mon_tas%rayon - 1), mon_tas%grille(mon_tas%rayon,mon_tas%hmax))
+    ! Allocation de tableaux et vérification
+    ALLOCATE (mon_tas%pile(0:(mon_tas%rayon-1)) , mon_tas%grille(0:(mon_tas%hmax-1),0:(mon_tas%rayon-1)) , stat = ok) 
+    IF (ok /= 0) STOP "Problème allocation !" 
 
+    ! Initilisation des tableaux
+    mon_tas%grille = " "; mon_tas%pile = 0
+
+    ! Boucle principale du programme
     do
-        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
-            !! Quitte la boucle si la hauteur max est atteinte
-        if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
-            !! Ajout d'un grain tout les nt
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
+        if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
         call transfert_grain(mon_tas%pile, mon_tas%rayon)
-            !! Transfert des grains de colonne en colonne
+
         call affiche(mon_tas)
+        print *, "========================="
+        print *, " Affichage n", i
+        print *, ""
+
         compteur = compteur + 1
     end do
 
+    DEALLOCATE (mon_tas%pile, mon_tas%grille)
 end program projet_esteban_nemo
