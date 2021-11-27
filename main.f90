@@ -31,19 +31,21 @@ module projet
     end function lecture_controlee
 
     subroutine affiche(un_tas) 
-        !! Affiche l'état du tas
+        !! Affichage du tas
         implicit none
         type(tas),intent(inout) :: un_tas
         INTEGER :: line , colonne
-        
+
+        !Remplissage de la grille de caractère        
         do colonne = 0, un_tas%rayon -1
             if (un_tas%pile(colonne) /= 0) then
-                do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1
+                do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1 !Pars de la fin de la grille pour rajouter les grains
                     un_tas%grille(line,colonne) = "O"
                 end do
             end if
         end do   
         
+        !Affichage de la grille
         do line = 0, un_tas%hmax-1
             do colonne = 0, (un_tas%rayon-1)
                 write(*, fmt="(1x,a,i0)",advance= "no") un_tas%grille(line,colonne)
@@ -54,12 +56,12 @@ module projet
     
     end subroutine affiche
 
-    !subroutine transfert_grain(pile)
-    !    !! Modifie le tableau pile pour simuler la chute des grains
-    !    INTEGER, DIMENSION(:), intent(inout) :: pile
-    !
-    !
-    !end subroutine transfert_grain
+    subroutine transfert_grain(pile)
+        !! Modifie le tableau pile pour simuler la chute des grains
+        INTEGER, DIMENSION(:), intent(inout) :: pile
+    
+    
+    end subroutine transfert_grain
 
 end module projet
 
