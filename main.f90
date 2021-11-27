@@ -62,7 +62,7 @@ module projet
         r = r * (rmax + 1)
         i = floor(r)
 
-        pile = pile(i) + 1
+        pile(i) = pile(i) + 1
 
     end subroutine transfert_grain
 
@@ -72,8 +72,10 @@ program projet_esteban_nemo
     use projet
     implicit none
     TYPE(tas) :: mon_tas
+        !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
-    INTEGER :: i = 0
+        !! Initialisations des constantes
+    INTEGER :: compteur = 0
         !! Compteur du nombre de grains ajoutés
 
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
@@ -84,12 +86,12 @@ program projet_esteban_nemo
     do
         if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
             !! Quitte la boucle si la hauteur max est atteinte
-        if (mod(i,nt) /= 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
+        if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
             !! Ajout d'un grain tout les nt
         call transfert_grain(mon_tas%pile, mon_tas%rayon)
             !! Transfert des grains de colonne en colonne
         call affiche(mon_tas)
-        i = i + 1
+        compteur = compteur + 1
     end do
 
 end program projet_esteban_nemo
