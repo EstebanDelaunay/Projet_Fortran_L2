@@ -54,9 +54,22 @@ module projet
 
     end subroutine affiche
 
-    subroutine transfert_grain(pile)
+    subroutine transfert_grain(pile, rmax)
         !! Modifie le tableau pile pour simuler la chute des grains
-        INTEGER, DIMENSION(:), intent(inout) :: pile
+        !! Ajoute un grain dans une des colonnes de façon aléatoire
+        INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
+        INTEGER, INTENT(IN) :: rmax 
+            !! Taille du tableau où sont affichés les nombres de grains
+        REAL :: r
+        INTEGER :: i
+
+        CALL random_seed
+        CALL random_number(r)
+
+        r = r * (rmax + 1)
+        i = floor(r)
+
+        pile = pile(i) + 1
 
     end subroutine transfert_grain
 
@@ -86,7 +99,7 @@ program projet_esteban_nemo
     do
         if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
         if (mod(i,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
-        call transfert_grain(mon_tas%pile)
+        call transfert_grain(mon_tas%pile, mon_tas%rayon)
 
         call affiche(mon_tas)
         print *, "==================================="
