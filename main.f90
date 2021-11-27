@@ -23,10 +23,10 @@ module projet
         do
             print*, "Entrez une valeur comprise entre : ", nmin, "et", nmax
             read*, valeur
-            if (valeur > nmin .AND. valeur < nmax) exit 
+            if (valeur >= nmin .AND. valeur <= nmax) exit 
         end do
-        lecture_controlee = valeur
 
+        lecture_controlee = valeur
     end function lecture_controlee
 
     subroutine affiche(un_tas) 
@@ -51,7 +51,6 @@ module projet
             end do
             print *,""
         end do
-
     end subroutine affiche
 
     subroutine transfert_grain(pile, rmax)
@@ -72,7 +71,6 @@ module projet
                 pile(i+1) = pile(i+1) + ng
             end if
         end do  
-
     end subroutine transfert_grain
 
     SUBROUTINE init_rand
@@ -89,7 +87,6 @@ module projet
         
         CALL RANDOM_SEED(PUT= seed) ! Initialise l’aleatoire avec le germe
         DEALLOCATE(seed)
-
     END SUBROUTINE init_rand
 
 end module projet
@@ -123,8 +120,9 @@ program projet_esteban_nemo
     do
         if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
         if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
-        call transfert_grain(mon_tas%pile, mon_tas%rayon)
+        call transfert_grain(mon_tas%pile, mon_tas%rayon) !Déplace les grains
 
+        !Affichage
         call affiche(mon_tas)
         print *, "========================="
         print *, " Affichage n", compteur
