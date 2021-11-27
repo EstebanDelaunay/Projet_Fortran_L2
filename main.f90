@@ -56,34 +56,56 @@ module projet
 
     subroutine transfert_grain(pile, rmax)
         !! Modifie le tableau pile pour simuler la chute des grains
-        !! Ajoute un grain dans une des colonnes de façon aléatoire
         INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
         INTEGER, INTENT(IN) :: rmax 
             !! Taille du tableau où sont affichés les nombres de grains
-        REAL :: r
-        INTEGER :: i
+        REAL :: r = 0. , ng_real = 0.
+        INTEGER :: i, ng = 0
 
-        CALL random_seed
-        CALL random_number(r)
-
-        r = r * (rmax + 1)
-        i = floor(r)
-
-        pile(i) = pile(i) + 1
+        do i = 1, rmax
+            if (pile(i) >= pile(i+1)+2 ) then
+                CALL random_number(r)
+                ng_real = 1 + (0.5 * (2 + pile(i) - pile(i+1)) * r)
+                ng = floor(ng_real)
+                print *, ng
+                pile(i) = pile(i) - ng
+                pile(i+1) = pile(i+1) + ng
+            end if
+        end do  
 
     end subroutine transfert_grain
+
+    SUBROUTINE init_rand
+        INTEGER :: s , i , ok
+        INTEGER, DIMENSION (:) , ALLOCATABLE :: seed
+
+        CALL RANDOM_SEED(SIZE= s) ! Renvoie la taille du germe dans s
+        ALLOCATE(seed(s) , STAT=ok) ! Alloue le tableau du germe
+        IF (ok /= 0) STOP "init_rand : echec allocation seed !"
+        
+        DO i =1 , s
+            CALL SYSTEM_CLOCK (COUNT= seed(i)) ! Initialise le germe avec l’horloge
+        END DO
+        
+        CALL RANDOM_SEED(PUT= seed) ! Initialise l’aleatoire avec le germe
+        DEALLOCATE(seed)
+
+    END SUBROUTINE init_rand
 
 end module projet
 
 program projet_esteban_nemo
     use projet
     implicit none
+    
     TYPE(tas) :: mon_tas
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: compteur = 0
+    INTEGER :: ok, compteur = 0
         !! Compteur du nombre de grains ajoutés
+
+    call init_rand
 
     print *, "Rentrez le rayon maximum du tas"
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
@@ -105,7 +127,7 @@ program projet_esteban_nemo
 
         call affiche(mon_tas)
         print *, "========================="
-        print *, " Affichage n", i
+        print *, " Affichage n", compteur
         print *, ""
 
         compteur = compteur + 1
