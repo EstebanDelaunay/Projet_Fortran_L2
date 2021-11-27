@@ -102,8 +102,8 @@ program projet_esteban_nemo
         call transfert_grain(mon_tas%pile, mon_tas%rayon)
 
         call affiche(mon_tas)
-        print *, "==================================="
-        print *, "Affichage n", i
+        print *, "========================="
+        print *, " Affichage n", i
         print *, ""
 
         i = i + 1
