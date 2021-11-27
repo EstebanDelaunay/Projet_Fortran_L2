@@ -1,5 +1,4 @@
 module projet
-
     type tas 
         !! Type dérivé
         INTEGER :: rayon 
@@ -52,15 +51,13 @@ module projet
             end do
             print *,""
         end do
-        
-    
+
     end subroutine affiche
 
     subroutine transfert_grain(pile)
         !! Modifie le tableau pile pour simuler la chute des grains
         INTEGER, DIMENSION(:), intent(inout) :: pile
-    
-    
+
     end subroutine transfert_grain
 
 end module projet
@@ -88,9 +85,14 @@ program projet_esteban_nemo
     ! Boucle principale du programme
     do
         if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
-        if (mod(i,nt) /= 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
+        if (mod(i,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
         call transfert_grain(mon_tas%pile)
+
         call affiche(mon_tas)
+        print *, "==================================="
+        print *, "Affichage n", i
+        print *, ""
+
         i = i + 1
     end do
 
