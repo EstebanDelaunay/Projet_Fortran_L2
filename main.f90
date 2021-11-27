@@ -47,11 +47,12 @@ module projet
     
     end subroutine affiche
 
-    subroutine transfert_grain(pile)
+    subroutine transfert_grain(pile, rmax)
         !! Modifie le tableau pile pour simuler la chute des grains
         !! Ajoute un grain dans une des colonnes de façon aléatoire
         INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
-        INTEGER, INTENT(IN) :: rmax = montas%rayon !taille du tableau où sont affichés les nombres de grains
+        INTEGER, INTENT(IN) :: rmax 
+            !! Taille du tableau où sont affichés les nombres de grains
         REAL :: r
         INTEGER :: i
 
@@ -67,12 +68,13 @@ module projet
 
 end module projet
 
-program projet_esteban_nemo !Ajouter les tableaux mon_tas%pile et mon_tas%grille dans la déclaration 
+program projet_esteban_nemo
     use projet
     implicit none
     TYPE(tas) :: mon_tas
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
-    INTEGER :: i = 0 !compteur du nombre de grains ajoutés
+    INTEGER :: i = 0
+        !! Compteur du nombre de grains ajoutés
 
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
     mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
@@ -84,7 +86,8 @@ program projet_esteban_nemo !Ajouter les tableaux mon_tas%pile et mon_tas%grille
             !! Quitte la boucle si la hauteur max est atteinte
         if (mod(i,nt) /= 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 
             !! Ajout d'un grain tout les nt
-        call transfert_grain(mon_tas%pile)
+        call transfert_grain(mon_tas%pile, mon_tas%rayon)
+            !! Transfert des grains de colonne en colonne
         call affiche(mon_tas)
         i = i + 1
     end do
