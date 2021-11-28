@@ -66,7 +66,6 @@ module projet
                 CALL random_number(r)
                 ng_real = 1 + (0.5 * (2 + pile(i) - pile(i+1)) * r)
                 ng = floor(ng_real)
-                print *, ng
                 pile(i) = pile(i) - ng
                 pile(i+1) = pile(i+1) + ng
             end if
@@ -118,7 +117,13 @@ program projet_esteban_nemo
 
     ! Boucle principale du programme
     do
-        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) then !Verification si la hauteur max est atteinte
+            CALL affiche(mon_tas)
+            print *, "========================="
+            print *, " Affichage n", compteur
+            print *, ""
+            exit !Quitte la boucle si la hauteur max est atteinte
+        end if
         if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
         call transfert_grain(mon_tas%pile, mon_tas%rayon) !Déplace les grains
 
@@ -132,4 +137,4 @@ program projet_esteban_nemo
     end do
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
-end program projet_esteban_nemo
+end program projet_esteban_nemo 
