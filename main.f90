@@ -98,7 +98,7 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0
+    INTEGER :: ok, compteur = 0, i
         !! Compteur du nombre de grains ajoutés
 
     call init_rand
@@ -139,9 +139,9 @@ program projet_esteban_nemo
     !Création d'un fichier résultat avec une colonne affichant le  
     !nombre de pile et une autre le nb de grains dans cette pile.
     OPEN(unit=10 ,file = "tas_final.res", ACTION = "WRITE", IOSTAT=ok)
-    IF (ok/=0) STOP"Erreur"
-    do i = 1, montas%rayon - 1
-        WRITE(unit=10, fmt=*) i, pile
+    IF (ok/=0) STOP "Erreur"
+    do i = 1, mon_tas%rayon - 1
+        WRITE(unit=10, fmt=*) i, mon_tas%pile
     end do
     CLOSE(unit=10)
 
