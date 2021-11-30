@@ -119,7 +119,7 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0, i , k
+    INTEGER :: ok, compteur = 0, i
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false.
 
@@ -130,15 +130,14 @@ program projet_esteban_nemo
     do i=1, 4
         select case (i)
             case(1)
-                READ(unit = 10, fmt = *) k , mon_tas%rayon
-                print *, mon_tas%rayon
-        end select
+                READ(unit = 10, fmt = *), mon_tas%rayon
+            case(2)
+                READ(unit = 10, fmt = *), mon_tas%hmax
+            end select
     end do
     
-    print *, "Rentrez le rayon maximum du tas"
-    mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
-    print *, "Rentrez la hauteur maximum du tas"
-    mon_tas%hmax = lecture_controlee(borne_inf, borne_sup)
+    print *, "rmax = ", mon_tas%rayon
+    print *, "hmax = ", mon_tas%hmax
 
     ! Allocation de tableaux et vérification
     ALLOCATE (mon_tas%pile(0:(mon_tas%rayon-1)) , mon_tas%grille(0:(mon_tas%hmax-1),0:(mon_tas%rayon-1)) , stat = ok) 
