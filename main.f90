@@ -55,13 +55,13 @@ module projet
 
     subroutine transfert_grain(pile, rmax)
         !! Modifie le tableau pile pour simuler la chute des grains
-        INTEGER, DIMENSION(:), INTENT(INOUT) :: pile
+        INTEGER, DIMENSION(0:), INTENT(INOUT) :: pile
         INTEGER, INTENT(IN) :: rmax 
             !! Taille du tableau où sont affichés les nombres de grains
         REAL :: r = 0. , ng_real = 0.
         INTEGER :: i, ng = 0
 
-        do i = 1, rmax
+        do i = 0, rmax-2
             if (pile(i) >= pile(i+1)+2 ) then
                 CALL random_number(r)
                 ng_real = 1 + (0.5 * (2 + pile(i) - pile(i+1)) * r)
