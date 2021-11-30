@@ -125,6 +125,15 @@ program projet_esteban_nemo
 
     call init_rand
 
+    OPEN(unit = 10, file = "param.dat", ACTION = "READ", IOSTAT=ok)
+    IF (ok/=0) STOP "Erreur ouverture pour le READ"
+    do i=1, 4
+        select case (i)
+            case(1)
+                !READ(unit = 10, fmt = *)
+        end select
+    end do
+    
     print *, "Rentrez le rayon maximum du tas"
     mon_tas%rayon = lecture_controlee(borne_inf, borne_sup)
     print *, "Rentrez la hauteur maximum du tas"
@@ -159,11 +168,11 @@ program projet_esteban_nemo
     !Création d'un fichier résultat avec une colonne affichant le  
     !nombre de pile et une autre le nb de grains dans cette pile.
     OPEN(unit=10 ,file = "tas_final.res", ACTION = "WRITE", IOSTAT=ok)
-    IF (ok/=0) STOP "Erreur"
+    IF (ok/=0) STOP "Erreur ouverture pour le WRITE"
     do i = 0, mon_tas%rayon - 1
-        WRITE(unit=10, fmt=*) i, mon_tas%pile(i)
+        WRITE(unit=11, fmt=*) i, mon_tas%pile(i)
     end do
-    CLOSE(unit=10)
+    CLOSE(unit=11)
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
 end program projet_esteban_nemo 
