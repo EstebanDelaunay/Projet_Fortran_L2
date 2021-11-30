@@ -141,7 +141,7 @@ program projet_esteban_nemo
     OPEN(unit=10 ,file = "tas_final.res", ACTION = "WRITE", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur"
     do i = 0, mon_tas%rayon - 1
-        WRITE(unit=10, fmt=*) i, mon_tas%pile
+        WRITE(unit=10, fmt=*) i, mon_tas%pile(i)
     end do
     CLOSE(unit=10)
 
