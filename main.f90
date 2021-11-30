@@ -76,7 +76,7 @@ module projet
         INTEGER :: s , i , ok
         INTEGER, DIMENSION (:) , ALLOCATABLE :: seed
 
-        CALL RANDOM_SEED(SIZE= s) ! Renvoie la taille du germe dans s
+        CALL RANDOM_SEED(SIZE = s) ! Renvoie la taille du germe dans s
         ALLOCATE(seed(s) , STAT=ok) ! Alloue le tableau du germe
         IF (ok /= 0) STOP "init_rand : echec allocation seed !"
         
@@ -119,7 +119,7 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0
+    INTEGER :: ok, compteur = 0, i
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false.
 
@@ -156,7 +156,14 @@ program projet_esteban_nemo
         compteur = compteur + 1
     end do
 
-    if (.not. affichage) call affiche(mon_tas)
+    !Création d'un fichier résultat avec une colonne affichant le  
+    !nombre de pile et une autre le nb de grains dans cette pile.
+    OPEN(unit=10 ,file = "tas_final.res", ACTION = "WRITE", IOSTAT=ok)
+    IF (ok/=0) STOP "Erreur"
+    do i = 0, mon_tas%rayon - 1
+        WRITE(unit=10, fmt=*) i, mon_tas%pile(i)
+    end do
+    CLOSE(unit=10)
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
 end program projet_esteban_nemo 
