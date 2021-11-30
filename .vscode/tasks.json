@@ -13,6 +13,13 @@
                 "${fileBasename}"
             ],
             "group": "build"
+        },
+        {
+            "label": "exec",
+            "type": "shell",
+            "command": ".\\${fileBasenameNoExtension}.exe",
+            "group": "none",
+            "problemMatcher": []
         }
     ]
 }

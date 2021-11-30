@@ -119,7 +119,7 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0, i
+    INTEGER :: ok, compteur = 0, i , k
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false.
 
@@ -130,7 +130,8 @@ program projet_esteban_nemo
     do i=1, 4
         select case (i)
             case(1)
-                !READ(unit = 10, fmt = *)
+                READ(unit = 10, fmt = *) k , mon_tas%rayon
+                print *, mon_tas%rayon
         end select
     end do
     
