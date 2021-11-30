@@ -122,6 +122,8 @@ program projet_esteban_nemo
     INTEGER :: ok, compteur = 0, i
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false.
+    CHARACTER :: choix_affichage
+    CHARACTER(50) :: nom_resultat
 
     call init_rand
 
@@ -130,14 +132,24 @@ program projet_esteban_nemo
     do i=1, 4
         select case (i)
             case(1)
-                READ(unit = 10, fmt = *), mon_tas%rayon
+                READ(unit = 10, fmt = *) mon_tas%rayon
             case(2)
-                READ(unit = 10, fmt = *), mon_tas%hmax
+                READ(unit = 10, fmt = *) mon_tas%hmax
+            case(3)
+                READ(unit = 10, fmt = *) choix_affichage
+            case(4)
+                READ(unit = 10, fmt = *) nom_resultat
             end select
     end do
-    
-    print *, "rmax = ", mon_tas%rayon
-    print *, "hmax = ", mon_tas%hmax
+
+    select case (choix_affichage)
+        case("o")
+            affichage = .true.
+        case("n")
+            affichage = .false.
+        case default    
+            call ask_affiche(affichage)
+    end select
 
     ! Allocation de tableaux et vérification
     ALLOCATE (mon_tas%pile(0:(mon_tas%rayon-1)) , mon_tas%grille(0:(mon_tas%hmax-1),0:(mon_tas%rayon-1)) , stat = ok) 
@@ -145,9 +157,6 @@ program projet_esteban_nemo
 
     ! Initilisation des tableaux
     mon_tas%grille = " "; mon_tas%pile = 0
-
-    ! Demande à l'utilisateur si il veut que les piles de grains soit afficher
-    call ask_affiche(affichage)
 
     ! Boucle principale du programme
     do
@@ -167,7 +176,7 @@ program projet_esteban_nemo
 
     !Création d'un fichier résultat avec une colonne affichant le  
     !nombre de pile et une autre le nb de grains dans cette pile.
-    OPEN(unit=10 ,file = "tas_final.res", ACTION = "WRITE", IOSTAT=ok)
+    OPEN(unit=10 ,file = nom_resultat, ACTION = "WRITE", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur ouverture pour le WRITE"
     do i = 0, mon_tas%rayon - 1
         WRITE(unit=11, fmt=*) i, mon_tas%pile(i)
