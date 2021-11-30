@@ -47,7 +47,7 @@ module projet
         !Affichage de la grille
         do line = 0, un_tas%hmax-1
             do colonne = 0, (un_tas%rayon-1)
-                write(*, fmt="(1x,a,i0)",advance= "no") un_tas%grille(line,colonne)
+                write(*, fmt="(1x,A1)",advance= "no") un_tas%grille(line,colonne)
             end do
             print *,""
         end do
@@ -88,6 +88,27 @@ module projet
         DEALLOCATE(seed)
     END SUBROUTINE init_rand
 
+    subroutine ask_affiche(logi_in)
+        implicit none
+        logical,intent(out) :: logi_in
+        CHARACTER :: input
+
+        do 
+            print *, "Souhaitez-vous un affichage (o/n)"
+            read *, input
+            select case(input)
+                case("o")
+                    logi_in = .true.
+                    exit
+                case("n")
+                    logi_in = .false.
+                    exit
+                case default
+            end select
+        end do
+    
+    end subroutine ask_affiche
+
 end module projet
 
 program projet_esteban_nemo
@@ -100,6 +121,7 @@ program projet_esteban_nemo
         !! Initialisations des constantes
     INTEGER :: ok, compteur = 0
         !! Compteur du nombre de grains ajoutés
+    logical :: affichage = .false.
 
     call init_rand
 
@@ -115,26 +137,26 @@ program projet_esteban_nemo
     ! Initilisation des tableaux
     mon_tas%grille = " "; mon_tas%pile = 0
 
+    ! Demande à l'utilisateur si il veut que les piles de grains soit afficher
+    call ask_affiche(affichage)
+
     ! Boucle principale du programme
     do
-        if (maxval(mon_tas%pile) >= mon_tas%hmax) then !Verification si la hauteur max est atteinte
-            CALL affiche(mon_tas)
+        if (affichage) then
+            !Affichage
+            call affiche(mon_tas)
             print *, "========================="
             print *, " Affichage n", compteur
             print *, ""
-            exit !Quitte la boucle si la hauteur max est atteinte
         end if
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
         if (mod(compteur,nt) == 0) mon_tas%pile(0) = mon_tas%pile(0) + 1 !Ajout d'un grain tout les nt
         call transfert_grain(mon_tas%pile, mon_tas%rayon) !Déplace les grains
 
-        !Affichage
-        call affiche(mon_tas)
-        print *, "========================="
-        print *, " Affichage n", compteur
-        print *, ""
-
         compteur = compteur + 1
     end do
+
+    if (.not. affichage) call affiche(mon_tas)
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
 end program projet_esteban_nemo 
