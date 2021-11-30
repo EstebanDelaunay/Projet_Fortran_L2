@@ -143,6 +143,7 @@ program projet_esteban_nemo
     do i = 0, mon_tas%rayon - 1
         WRITE(unit=10, fmt=*) i, mon_tas%pile(i)
     end do
+    print *, mon_tas%pile
     CLOSE(unit=10)
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
