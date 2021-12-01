@@ -1,4 +1,4 @@
-10              rmax  
-12              hmax
+35              rmax  
+15             hmax
 o               affichage du tas (o/n) ?
 tas_final.res   nom du fichier de resultats
