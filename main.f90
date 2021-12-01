@@ -176,7 +176,7 @@ program projet_esteban_nemo
 
     !Création d'un fichier résultat avec une colonne affichant le  
     !nombre de pile et une autre le nb de grains dans cette pile.
-    OPEN(unit=10 ,file = nom_resultat, ACTION = "WRITE", IOSTAT=ok)
+    OPEN(unit=11 ,file = nom_resultat, ACTION = "WRITE", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur ouverture pour le WRITE"
     do i = 0, mon_tas%rayon - 1
         WRITE(unit=11, fmt=*) i, mon_tas%pile(i)
