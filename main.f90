@@ -35,13 +35,14 @@ module projet
         type(tas),intent(inout) :: un_tas
         INTEGER :: line , colonne
 
+        !Remise à zéro de la grille
+        un_tas%grille = " "
+
         !Remplissage de la grille de caractère        
         do colonne = 0, un_tas%rayon -1
-            if (un_tas%pile(colonne) /= 0) then
-                do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1 !Pars de la fin de la grille pour rajouter les grains
-                    un_tas%grille(line,colonne) = "O"
-                end do
-            end if
+            do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1 !Pars de la fin de la grille pour rajouter les grains
+                un_tas%grille(line,colonne) = "O"
+            end do
         end do   
         
         !Affichage de la grille
