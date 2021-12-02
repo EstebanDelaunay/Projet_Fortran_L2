@@ -43,7 +43,7 @@ module projet
             do line = un_tas%hmax - un_tas%pile(colonne), un_tas%hmax-1 !Pars de la fin de la grille pour rajouter les grains
                 un_tas%grille(line,colonne) = "O"
             end do
-        end do   
+        end do
         
         !Affichage de la grille
         do line = 0, un_tas%hmax-1
