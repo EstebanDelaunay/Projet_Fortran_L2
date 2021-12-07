@@ -37,6 +37,8 @@ module projet
 
         !Remise à zéro de la grille
         un_tas%grille = " "
+        call system("clear")
+        call system("wait 0.1")
 
         !Remplissage de la grille de caractère        
         do colonne = 0, un_tas%rayon -1
