@@ -195,7 +195,7 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0, i
+    INTEGER :: ok, compteur = 0
     real :: rn
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false., modif = .false.
@@ -257,7 +257,8 @@ program projet_esteban_nemo
         end if
 
         call transfert_grain(mon_tas, modif) !Déplace les grains
-
+        
+        
         if (affichage .and. modif) then ! Affichage
             call affiche(mon_tas)
             print *, "========================="
@@ -272,8 +273,8 @@ program projet_esteban_nemo
     !nombre de pile et une autre le nb de grains dans cette pile.
     OPEN(unit=11 ,file = nom_resultat, ACTION = "WRITE", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur ouverture pour le WRITE"
-    do i = 0, mon_tas%rayon - 1
-        WRITE(unit=11, fmt=*) i, mon_tas%pile(i)
+    do compteur = 0, mon_tas%rayon - 1
+        WRITE(unit=11, fmt=*) compteur, mon_tas%pile(compteur)
     end do
     CLOSE(unit=11)
 
