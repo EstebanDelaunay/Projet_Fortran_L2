@@ -37,7 +37,7 @@ module projet
 
         !Remise à zéro de la grille
         un_tas%grille = " "
-        !call system("sleep 0.01")
+        !call system("sleep 0.1")
         call system("cls")
 
         !Remplissage de la grille de caractère        
@@ -278,4 +278,7 @@ program projet_esteban_nemo
     CLOSE(unit=11)
 
     DEALLOCATE (mon_tas%pile, mon_tas%grille)
+
+    print *, "Pressez Entree pour fermer le programe"
+    read *
 end program projet_esteban_nemo 
