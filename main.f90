@@ -195,7 +195,8 @@ program projet_esteban_nemo
         !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
-    INTEGER :: ok, compteur = 0
+    INTEGER, DIMENSION(:), ALLOCATABLE :: tabAval
+    INTEGER :: ok, compteur = 0, compteurAval
     real :: rn
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false., modif = .false.
@@ -257,6 +258,12 @@ program projet_esteban_nemo
         end if
 
         call transfert_grain(mon_tas, modif) !Déplace les grains
+        if (modif) then
+            compteurAval = compteurAval +1
+            modif = .false.
+        else
+            tabAval(compteurAval) = tabAval(compteurAval) +1
+        end if
         
         
         if (affichage .and. modif) then ! Affichage
