@@ -36,7 +36,7 @@ module projet
 
         !Remise à zéro de la grille
         un_tas%grille = " "
-        !call system("sleep 0.1")
+        !call system("sleep 0.1") !Ne fonctionne pas sur Windows avec Powershell
         call system("cls")
 
         !Remplissage de la grille de caractère        
@@ -184,7 +184,7 @@ module projet
     end subroutine ask_affiche
 
     subroutine ajout_grain(un_tas)
-    !! Modifie le tableau pile pour simuler l'ajout de grain
+        !! Modifie le tableau pile pour simuler l'ajout de grain
         type(tas),intent(inout) :: un_tas
         real :: rn
 
@@ -208,19 +208,20 @@ program projet_esteban_nemo
     use projet
     implicit none
     
+    ! Initialisation des variables
     TYPE(tas) :: mon_tas
-        !! Initialisation de la variable de type dérivé "tas"
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
-        !! Initialisations des constantes
     INTEGER, DIMENSION(:), ALLOCATABLE :: tabAval
     INTEGER :: ok, compteur = 0, compteurAval=0
-        !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false., modif = .false.
     CHARACTER :: choix_affichage
     CHARACTER(50) :: nom_resultat
 
+    ! Compiler avec gfortran, donc pour l'aléatoire on utilise 
+    ! la fonction init_rand comme équivalent à random_seed
     call init_rand
 
+    ! Lecture des paramètres défini dans le fichier param.dat
     OPEN(unit = 10, file = "param.dat", ACTION = "READ", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur ouverture pour le READ"
     READ(unit = 10, fmt = *) mon_tas%rayon
@@ -229,6 +230,8 @@ program projet_esteban_nemo
     READ(unit = 10, fmt = *) nom_resultat
     CLOSE(unit=10)
 
+    ! Test si l'affichage a été correctement paramétrer
+    ! Et demande à l'utilisateur si ce n'est pas le cas
     select case (choix_affichage)
         case("o","y")
             affichage = .true.
@@ -238,39 +241,44 @@ program projet_esteban_nemo
             call ask_affiche(affichage)
     end select
 
-    if (mon_tas%rayon < 3 .or. mon_tas%rayon > 40) then
+    ! Demande à l'utilisateur le rayon si celui-ci est en dehors des bornes
+    if (mon_tas%rayon < borne_inf .or. mon_tas%rayon > borne_sup) then
         mon_tas%rayon=lecture_controlee(borne_inf,borne_sup)
     end if
 
-    if (mon_tas%hmax < 3 .or. mon_tas%hmax > 40) then
+    ! Demande à l'utilisateur la hauteur max si celle-ci est en dehors des bornes
+    if (mon_tas%hmax < borne_inf .or. mon_tas%hmax > borne_sup) then
         mon_tas%hmax=lecture_controlee(borne_inf,borne_sup)
     end if
 
-    ! Allocation de tableaux et vérification
-    ALLOCATE (mon_tas%pile(0:(mon_tas%rayon -1)) , mon_tas%grille(0:(mon_tas%hmax -1),0:(mon_tas%rayon -1)), &
-    tabAval(0:mon_tas%rayon), stat = ok)
+    ! Allocation de tableaux
+    ALLOCATE (mon_tas%pile(0:(mon_tas%rayon-1)) , mon_tas%grille(0:(mon_tas%hmax-1),0:(mon_tas%rayon-1)), &
+    tabAval(0:mon_tas%rayon-1), stat = ok)
     IF (ok /= 0) STOP "Problème allocation !" 
-
-    
 
     ! Initilisation des tableaux
     mon_tas%grille = " "; mon_tas%pile = 0; tabAval = 0
 
     ! Boucle principale du programme
     do
-        !Quitte la boucle si la hauteur max est atteinte
-        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
+        ! Quitte la boucle si la hauteur max est atteinte
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) then
+            call affiche(mon_tas) 
+            exit
+        end if
 
-        ! Ajout des grains sur certains pas de temps (défini par nt)
+        ! Ajout des grains à certains pas de temps (défini par nt)
         if (mod(compteur, nt) == 0) then
             call ajout_grain(mon_tas)
         end if
 
-        !Déplacement des grains
+        ! Déplacement des grains
         call transfert_grain(mon_tas, modif) 
 
+        ! Si le tas a été modifier, on incrémente notre compteur de taille d'avalanche et on regarde si on affiche
+        ! Sinon on ajoute une avalanche dans le tableau qui compte le nombre d'avalanche
         if (modif) then
-            compteurAval = compteurAval + 1
+            compteurAval = compteurAval +1
             if (affichage) call affiche(mon_tas)
         else
             tabAval(compteurAval) = tabAval(compteurAval) +1
@@ -278,22 +286,26 @@ program projet_esteban_nemo
         end if
 
         modif = .false.
-        compteur = compteur + 1
+        compteur = compteur +1
     end do
 
-    !Création d'un fichier résultat avec une colonne affichant le  
-    !nombre de pile et une autre le nb de grains dans cette pile.
-    OPEN(unit=11 ,file = nom_resultat, ACTION = "WRITE", IOSTAT=ok)
+    !Création d'un fichier résultat avec une colonne affichant l'index 
+    !d'une pile et dans l'autre colonne le nombre de grains dans cette pile.
+    OPEN(unit=11 ,file = nom_resultat, ACTION = "WRITE", IOSTAT = ok)
     IF (ok/=0) STOP "Erreur ouverture pour le WRITE"
-    do compteur = 0, mon_tas%rayon - 1
+    do compteur = 0, mon_tas%rayon -1
         WRITE(unit=11, fmt=*) compteur, mon_tas%pile(compteur)
     end do
     CLOSE(unit=11)
 
-    print *, tabAval
-
+    !Création d'un fichier résultat avec une colonne affichant la longueur de l'avalanche 
+    !et dans l'autre le nombre de d'avalanche de cette longueur
+    open(unit=12, file = "distrib_taille.res", action = "write", iostat = ok)
+    if (ok/=0) stop "Erreur ouverture pour le WRITE"
+    do compteur = 0, mon_tas%rayon -1
+        write(unit = 12, fmt = *) compteur +1, tabAval(compteur)
+    end do
+    close(unit=12)
+    
     DEALLOCATE (mon_tas%pile, mon_tas%grille, tabAval)
-
-    print *, "Pressez Entree pour fermer le programe"
-    read *
-end program projet_esteban_nemo 
+end program projet_esteban_nemo
