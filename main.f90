@@ -10,7 +10,6 @@ module projet
             !! Tableau du nombre de grains par pile
         CHARACTER(1), DIMENSION(:,:), ALLOCATABLE :: grille 
             !! Tableau destiné à l'affichage du tas de sable
-        logical :: paire
     end type tas
 
     contains
@@ -63,7 +62,7 @@ module projet
         INTEGER :: compteur, ng
         logical, INTENT(OUT) :: modif
 
-        if (un_tas%paire) then ! Demande si le tas est paire
+        if (mod(un_tas%rayon,2) == 0) then ! Demande si le tas est paire
 
             do compteur = 1, un_tas%rayon-2
                 if(compteur <= un_tas%rayon/2) then !On est avant le milieu
@@ -145,7 +144,6 @@ module projet
                 end if
             end do
         end if
-
     end subroutine transfert_grain
 
     SUBROUTINE init_rand
@@ -185,6 +183,25 @@ module projet
     
     end subroutine ask_affiche
 
+    subroutine ajout_grain(un_tas)
+    !! Modifie le tableau pile pour simuler l'ajout de grain
+        type(tas),intent(inout) :: un_tas
+        real :: rn
+
+        if (mod(un_tas%rayon,2) == 0) then !Si le tas est pair
+            !Choisis aléatoirement le placement du grain pour les tas de largeur paire
+            call random_number(rn)
+            if (rn < 0.5) then 
+                un_tas%pile((un_tas%rayon/2)) = un_tas%pile((un_tas%rayon/2)) + 1
+            else
+                un_tas%pile((un_tas%rayon/2)+1) = un_tas%pile((un_tas%rayon/2)+1) + 1
+            end if
+        else
+            un_tas%pile(un_tas%rayon/2) = un_tas%pile(un_tas%rayon/2) + 1 !Ajout d'un grain au centre du tas
+        end if
+    
+    end subroutine ajout_grain
+
 end module projet
 
 program projet_esteban_nemo
@@ -196,8 +213,7 @@ program projet_esteban_nemo
     INTEGER, PARAMETER :: borne_inf = 3, borne_sup = 40, nt = 10
         !! Initialisations des constantes
     INTEGER, DIMENSION(:), ALLOCATABLE :: tabAval
-    INTEGER :: ok, compteur = 0, compteurAval
-    real :: rn
+    INTEGER :: ok, compteur = 0, compteurAval=0
         !! Compteur du nombre de grains ajoutés
     logical :: affichage = .false., modif = .false.
     CHARACTER :: choix_affichage
@@ -207,11 +223,11 @@ program projet_esteban_nemo
 
     OPEN(unit = 10, file = "param.dat", ACTION = "READ", IOSTAT=ok)
     IF (ok/=0) STOP "Erreur ouverture pour le READ"
-
     READ(unit = 10, fmt = *) mon_tas%rayon
     READ(unit = 10, fmt = *) mon_tas%hmax
     READ(unit = 10, fmt = *) choix_affichage
     READ(unit = 10, fmt = *) nom_resultat
+    CLOSE(unit=10)
 
     select case (choix_affichage)
         case("o","y")
@@ -231,45 +247,34 @@ program projet_esteban_nemo
     end if
 
     ! Allocation de tableaux et vérification
-    ALLOCATE (mon_tas%pile(0:(mon_tas%rayon-1)) , mon_tas%grille(0:(mon_tas%hmax-1),0:(mon_tas%rayon-1)) , stat = ok) 
+    ALLOCATE (mon_tas%pile(0:(mon_tas%rayon -1)) , mon_tas%grille(0:(mon_tas%hmax -1),0:(mon_tas%rayon -1)), &
+    tabAval(0:mon_tas%rayon), stat = ok)
     IF (ok /= 0) STOP "Problème allocation !" 
 
-    ! Initilisation des tableaux
-    mon_tas%grille = " "; mon_tas%pile = 0
+    
 
-    ! Initilisation de la variable Paire du tas
-    if (mod(mon_tas%rayon,2) == 0) mon_tas%paire = .true.
+    ! Initilisation des tableaux
+    mon_tas%grille = " "; mon_tas%pile = 0; tabAval = 0
 
     ! Boucle principale du programme
     do
-        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit !Quitte la boucle si la hauteur max est atteinte
+        !Quitte la boucle si la hauteur max est atteinte
+        if (maxval(mon_tas%pile) >= mon_tas%hmax) exit 
 
-        if (mod(compteur,nt) == 0) then
-            if (mon_tas%paire) then !Si le tas est pair
-                call random_number(rn)
-                if (rn < 0.5) then
-                    mon_tas%pile((mon_tas%rayon/2)) = mon_tas%pile((mon_tas%rayon/2)) + 1
-                else
-                    mon_tas%pile((mon_tas%rayon/2)+1) = mon_tas%pile((mon_tas%rayon/2)+1) + 1
-                end if
-            else
-                mon_tas%pile(mon_tas%rayon/2) = mon_tas%pile(mon_tas%rayon/2) + 1 !Ajout d'un grain au centre du tas
-            end if
+        ! Ajout des grains sur certains pas de temps (défini par nt)
+        if (mod(compteur, nt) == 0) then
+            call ajout_grain(mon_tas)
         end if
 
-        call transfert_grain(mon_tas, modif) !Déplace les grains
+        !Déplacement des grains
+        call transfert_grain(mon_tas, modif) 
+
         if (modif) then
-            compteurAval = compteurAval +1
-            modif = .false.
+            compteurAval = compteurAval + 1
+            if (affichage) call affiche(mon_tas)
         else
             tabAval(compteurAval) = tabAval(compteurAval) +1
-        end if
-        
-        
-        if (affichage .and. modif) then ! Affichage
-            call affiche(mon_tas)
-            print *, "========================="
-            print *, " Affichage n", compteur
+            compteurAval = 0
         end if
 
         modif = .false.
@@ -285,7 +290,9 @@ program projet_esteban_nemo
     end do
     CLOSE(unit=11)
 
-    DEALLOCATE (mon_tas%pile, mon_tas%grille)
+    print *, tabAval
+
+    DEALLOCATE (mon_tas%pile, mon_tas%grille, tabAval)
 
     print *, "Pressez Entree pour fermer le programe"
     read *
