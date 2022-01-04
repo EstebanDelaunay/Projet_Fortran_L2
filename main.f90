@@ -72,7 +72,7 @@ module projet
                         ng_real = 1 + (0.5 * (2 + un_tas%pile(compteur) - un_tas%pile(compteur - 1)) * r)
                         ng = floor(ng_real)
                         un_tas%pile(compteur) = un_tas%pile(compteur) - ng
-                        un_tas%pile(compteur-1) = un_tas%pile(compteur -1) + ng
+                        un_tas%pile(compteur -1) = un_tas%pile(compteur -1) + ng
                         modif = .true.
                     end if
 
